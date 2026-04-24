@@ -1,0 +1,50 @@
+## .NET
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+## IDE
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+## Node.js / npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+## Tailwind / Build Artifacts (opsional, output.css biasanya di-commit biar siap deploy)
+# wwwroot/css/dist/
+
+## Secrets & Local Configs
+appsettings.Development.json
+appsettings.Local.json
+*.pfx
+*.pem
+
+## OS
+Thumbs.db
+.DS_Store
