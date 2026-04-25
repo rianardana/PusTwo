@@ -1,7 +1,13 @@
+using PusTwo.Application.DTOs.Syspro;
+using PusTwo.Application.Interfaces;    
+using PusTwo.Infrastructure.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAutoMapper(typeof(Program)); 
+builder.Services.AddScoped<ISysproService, SysproService>();
 
 var app = builder.Build();
 
@@ -16,12 +22,13 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 app.UseRouting();
 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

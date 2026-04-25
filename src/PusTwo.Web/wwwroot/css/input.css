@@ -2,7 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom global styles bisa ditambahkan di bawah */
-body {
-  @apply bg-slate-50 text-slate-900;
-}
