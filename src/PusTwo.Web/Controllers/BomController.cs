@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using PusTwo.Application.Interfaces;
 using AutoMapper;
 using PusTwo.Web.ViewModels;
+using PusTwo.Application.DTOs.Syspro;
 
 namespace PusTwo.Web.Controllers
 {
-
-
+    
     public class BomController : Controller
     {
         private readonly ISysproService _sysproService;
@@ -31,45 +31,156 @@ namespace PusTwo.Web.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-
             TempData["SuccessMessage"] = "Data BOM berhasil disimpan!";
             return RedirectToAction(nameof(Create));
         }
 
-
-        // Di file: src/PusTwo.Web/Controllers/BomController.cs
-
-[HttpGet]
-public async Task<IActionResult> GetWorkCentresByJob(string jobNumber)
-{
-    if (string.IsNullOrWhiteSpace(jobNumber))
-        return BadRequest(new { success = false, message = "Job Number wajib diisi." });
-
-    try
-    {
-        var dtos = await _sysproService.GetWorkCentresByJobAsync(jobNumber);
-        var viewModels = _mapper.Map<List<BomViewModel>>(dtos);
-
-        // Ambil StockCode dari data pertama (semua row pasti sama StockCode-nya)
-        var stockCode = viewModels.FirstOrDefault()?.StockCode ?? string.Empty;
-
-        return Json(new
+        [HttpGet]
+        public async Task<IActionResult> GetWorkCentresByJob(string jobNumber)
         {
-            success = true,
-            message = $"Ditemukan {viewModels.Count} data WorkCentre (Route 0).",
-            stockCode = stockCode,  // ✅ Return StockCode untuk ditampilkan
-            data = viewModels
-        });
-    }
-    catch (Exception ex)
-        {
-            return Json(new
+            if (string.IsNullOrWhiteSpace(jobNumber))
+                return BadRequest(new { success = false, message = "Job Number wajib diisi." });
+
+            try
             {
-                success = false,
-                message = $"ERROR SYSpro: {ex.Message}", // Tampilkan detail
-                data = new List<BomViewModel>()
-            });
+                var dtos = await _sysproService.GetWorkCentresByJobAsync(jobNumber);
+                var viewModels = _mapper.Map<List<BomViewModel>>(dtos);
+                var stockCode = viewModels.FirstOrDefault()?.StockCode ?? string.Empty;
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Ditemukan {viewModels.Count} data WorkCentre (Route 0).",
+                    stockCode,
+                    data = viewModels
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"ERROR: {ex.Message}",
+                    data = new List<BomViewModel>()
+                });
+            }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMachines()
+        {
+            try
+            {
+                var dtos = await _sysproService.GetMachinesAsync();
+                var viewModels = _mapper.Map<List<MachineViewModel>>(dtos);
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Ditemukan {viewModels.Count} Machine(s).",
+                    data = viewModels
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"ERROR: {ex.Message}",
+                    data = new List<MachineViewModel>()
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetJobInfo(string jobNumber)
+        {
+            if (string.IsNullOrWhiteSpace(jobNumber))
+                return BadRequest(new { success = false, message = "Job Number wajib diisi." });
+
+            try
+            {
+                var dto = await _sysproService.GetJobInfoAsync(jobNumber);
+
+                if (dto == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Job tidak ditemukan di WipMaster.",
+                        data = (object)null
+                    });
+                }
+
+                var viewModel = _mapper.Map<JobLookupViewModel>(dto);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Data Job ditemukan.",
+                    data = viewModel
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"ERROR: {ex.Message}",
+                    data = (object)null
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNonProdGroups()
+        {
+            try
+            {
+                var dtos = await _sysproService.GetNonProdGroupsAsync();
+                var viewModels = _mapper.Map<List<NonProdGroupViewModel>>(dtos);
+
+                return Json(new
+                {
+                    success = true,
+                    data = viewModels
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"ERROR: {ex.Message}",
+                    data = new List<NonProdGroupViewModel>()
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDowntimeHistory(DateTime dateFrom, DateTime dateTo)
+        {
+            try
+            {
+                var dtos = await _sysproService.GetDowntimeHistoryAsync(dateFrom, dateTo);
+                var viewModels = _mapper.Map<List<DowntimeRecordViewModel>>(dtos);
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Ditemukan {viewModels.Count} record(s).",
+                    data = viewModels
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"ERROR: {ex.Message}",
+                    data = new List<DowntimeRecordViewModel>()
+                });
+            }
         }
     }
 }
