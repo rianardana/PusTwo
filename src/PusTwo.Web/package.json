@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "css:build": "npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/dist/output.css --minify",
-    "css:watch": "npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/dist/output.css --watch"
+    "css:watch": "npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/dist/output.css --watch",
+    "tailwind": "npm run css:build",
+    "tailwind:watch": "npm run css:watch"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",

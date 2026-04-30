@@ -1,4 +1,6 @@
-public class DowntimeRecordDto
+namespace PusTwo.Application.DTOs.Syspro
+{
+    public class DowntimeRecordDto
 {
     public DateTime EntryDate { get; set; }
     public string Shift { get; set; } = string.Empty;
@@ -9,4 +11,6 @@ public class DowntimeRecordDto
     public string GrpDescription { get; set; } = string.Empty;
     public decimal TeardownTime { get; set; } 
     public string Machine { get; set; } = string.Empty;
+}
+
 }

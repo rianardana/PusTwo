@@ -132,30 +132,8 @@ namespace PusTwo.Web.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetNonProdGroups()
-        {
-            try
-            {
-                var dtos = await _sysproService.GetNonProdGroupsAsync();
-                var viewModels = _mapper.Map<List<NonProdGroupViewModel>>(dtos);
 
-                return Json(new
-                {
-                    success = true,
-                    data = viewModels
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = $"ERROR: {ex.Message}",
-                    data = new List<NonProdGroupViewModel>()
-                });
-            }
-        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetDowntimeHistory(DateTime dateFrom, DateTime dateTo)
@@ -182,5 +160,63 @@ namespace PusTwo.Web.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        public IActionResult CreateDownTime()
+        {
+            return View(new CreateDownTimeViewModel());
+        }
+
+
+        [HttpGet]
+            public async Task<IActionResult> GetNonProdGroups()
+            {
+                try
+                {
+                    var dtos = await _sysproService.GetNonProdGroupsAsync();
+                    
+                    return Json(new 
+                    { 
+                        success = true, 
+                        data = dtos 
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new 
+                    { 
+                        success = false, 
+                        message = $"ERROR: {ex.Message}",
+                        data = new List<object>() 
+                    });
+                }
+            }
+
+            [HttpGet]
+            public async Task<IActionResult> GetNonProdCodes(string groupCode)
+            {
+                if (string.IsNullOrWhiteSpace(groupCode))
+                    return Json(new { success = false, message = "Group Code wajib diisi.", data = new List<object>() });
+
+                try
+                {
+                    var dtos = await _sysproService.GetNonProdCodesByGroupAsync(groupCode);
+                    
+                    return Json(new 
+                    { 
+                        success = true, 
+                        data = dtos 
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new 
+                    { 
+                        success = false, 
+                        message = $"ERROR: {ex.Message}", 
+                        data = new List<object>() 
+                    });
+                }
+            }               
     }
 }

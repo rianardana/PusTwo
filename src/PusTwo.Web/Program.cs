@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using PusTwo.Application.DTOs.Syspro;
-using PusTwo.Application.Interfaces;    
+using PusTwo.Application.Interfaces;
+using PusTwo.Infrastructure.Data;
 using PusTwo.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(Program)); 
+builder.Services.AddDbContext<SysproDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SysproConnection"), 
+        sql => sql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
 builder.Services.AddScoped<ISysproService, SysproService>();
 
 var app = builder.Build();
