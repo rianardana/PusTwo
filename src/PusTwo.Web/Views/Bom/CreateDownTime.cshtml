@@ -4,17 +4,6 @@
     ViewData["Title"] = "Casting Downtime Info";
 }
 
-<!-- ============================================ -->
-<!-- EXTERNAL LIBRARIES - HEAD -->
-<!-- ============================================ -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<!-- 2. Select2 CSS & JS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<!-- ============================================ -->
-<!-- CUSTOM STYLES -->
-<!-- ============================================ -->
 <style>
     :root {
         --color-primary: #1e40af;
@@ -44,88 +33,48 @@
     }
 </style>
 
-<!-- ============================================ -->
-<!-- MAIN CONTAINER -->
-<!-- ============================================ -->
 <div class="min-h-screen" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- ========== HEADER SECTION ========== -->
         <div class="mb-8">
             <div class="flex items-center justify-between mb-4">
-                <!-- Title -->
                 <div>
-                    <h1 class="text-4xl font-bold mb-1" style="color: var(--color-text-primary);">
-                        Casting Downtime Info
-                    </h1>
-                    <p style="color: var(--color-text-secondary);">
-                        Catat downtime mesin casting secara real-time
-                    </p>
+                    <h1 class="text-4xl font-bold mb-1" style="color: var(--color-text-primary);">Casting Downtime Info</h1>
+                    <p style="color: var(--color-text-secondary);">Catat downtime mesin casting secara real-time</p>
                 </div>
-
-                <!-- Current Time Display -->
-                <div class="flex items-center gap-3 px-4 py-2.5 rounded-lg" 
-                     style="background-color: var(--color-primary); color: white; box-shadow: var(--shadow-md);">
+                <div class="flex items-center gap-3 px-4 py-2.5 rounded-lg" style="background-color: var(--color-primary); color: white; box-shadow: var(--shadow-md);">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span id="currentTime" class="font-semibold text-sm">--:--</span>
                 </div>
             </div>
-
-            <!-- Underline Decoration -->
-            <div style="height: 4px; width: 60px; background-color: var(--color-primary-light); border-radius: 2px;">
-            </div>
+            <div style="height: 4px; width: 60px; background-color: var(--color-primary-light); border-radius: 2px;"></div>
         </div>
 
-        <!-- ========== MAIN FORM GRID ========== -->
         <form asp-action="CreateDownTime" method="post" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
-            <!-- ========== LEFT COLUMN: FORM INPUTS ========== -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg p-6" style="box-shadow: var(--shadow-md);">
                     
-                    <!-- JOB DATE -->
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">
-                            Job Date
-                        </label>
-                        <input type="date" 
-                               id="jobDate" 
-                               class="w-full px-4 py-2.5 text-sm border rounded-md transition-all"
-                               style="border-color: var(--color-border);"
-                               onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'"
-                               onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" />
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Job Date</label>
+                        <input type="date" id="jobDate" class="w-full px-4 py-2.5 text-sm border rounded-md transition-all" style="border-color: var(--color-border);" onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'" onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" />
                     </div>
 
-                    <!-- SHIFT SELECTION -->
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-3" style="color: var(--color-text-primary);">
-                            Shift
-                        </label>
+                        <label class="block text-sm font-semibold mb-3" style="color: var(--color-text-primary);">Shift</label>
                         <div class="grid grid-cols-3 gap-2">
-                            <!-- Shift 1st -->
-                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all" 
-                                   style="border: 2px solid var(--color-primary); background-color: rgba(59, 130, 246, 0.05);">
-                                <input type="radio" name="Shift" value="1" class="w-4 h-4 mr-1.5" checked 
-                                       style="accent-color: var(--color-primary);" />
+                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all" style="border: 2px solid var(--color-primary); background-color: rgba(59, 130, 246, 0.05);">
+                                <input type="radio" name="Shift" value="1" class="w-4 h-4 mr-1.5" checked style="accent-color: var(--color-primary);" />
                                 <span class="text-xs font-semibold" style="color: var(--color-primary);">1st</span>
                             </label>
-
-                            <!-- Shift 2nd -->
-                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all hover:bg-opacity-50" 
-                                   style="border: 2px solid var(--color-border);">
-                                <input type="radio" name="Shift" value="2" class="w-4 h-4 mr-1.5" 
-                                       style="accent-color: var(--color-primary);" />
+                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all hover:bg-opacity-50" style="border: 2px solid var(--color-border);">
+                                <input type="radio" name="Shift" value="2" class="w-4 h-4 mr-1.5" style="accent-color: var(--color-primary);" />
                                 <span class="text-xs font-semibold" style="color: var(--color-text-secondary);">2nd</span>
                             </label>
-
-                            <!-- Shift 3rd -->
-                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all hover:bg-opacity-50" 
-                                   style="border: 2px solid var(--color-border);">
-                                <input type="radio" name="Shift" value="3" class="w-4 h-4 mr-1.5" 
-                                       style="accent-color: var(--color-primary);" />
+                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all hover:bg-opacity-50" style="border: 2px solid var(--color-border);">
+                                <input type="radio" name="Shift" value="3" class="w-4 h-4 mr-1.5" style="accent-color: var(--color-primary);" />
                                 <span class="text-xs font-semibold" style="color: var(--color-text-secondary);">3rd</span>
                             </label>
                         </div>
@@ -133,547 +82,151 @@
 
                     <hr style="border-color: var(--color-border); margin: 1.5rem 0;" />
 
-                    <!-- MACHINE ID -->
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">
-                            Machine ID
-                        </label>
-                        <select id="machineDropdown" 
-                                asp-for="Machine" 
-                                class="w-full px-4 py-2.5 text-sm border rounded-md bg-white transition-all"
-                                style="border-color: var(--color-border);"
-                                onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'"
-                                onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'"
-                                required>
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Machine ID</label>
+                        <select id="machineDropdown" asp-for="Machine" class="w-full px-4 py-2.5 text-sm border rounded-md bg-white transition-all" style="border-color: var(--color-border);" onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'" onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" required>
                             <option value="">-- Select Machines --</option>
                         </select>
-                        
                         <input type="hidden" asp-for="WorkCentre" id="workCentreHidden" />
-                        
-                        <p class="mt-2 text-xs" style="color: var(--color-text-secondary);">
-                            WorkCentre: 
-                            <span id="wcDisplay" 
-                                  class="font-semibold px-2 py-1 rounded text-xs" 
-                                  style="color: var(--color-primary); background-color: rgba(59, 130, 246, 0.08);">
-                                -
-                            </span>
-                        </p>
+                        <p class="mt-2 text-xs" style="color: var(--color-text-secondary);">WorkCentre: <span id="wcDisplay" class="font-semibold px-2 py-1 rounded text-xs" style="color: var(--color-primary); background-color: rgba(59, 130, 246, 0.08);">-</span></p>
                     </div>
 
-                    <!-- JOB NUMBER -->
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">
-                            Job Number
-                        </label>
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Job Number</label>
                         <div class="relative">
-                            <input asp-for="JobNumber" 
-                                   id="jobInput" 
-                                   type="text" 
-                                   class="w-full px-4 py-2.5 text-sm border rounded-md transition-all"
-                                   style="border-color: var(--color-border);"
-                                   onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'"
-                                   onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'"
-                                   placeholder="Job Number" 
-                                   required />
-                            
-                            <!-- Loader Spinner -->
+                            <input asp-for="JobNumber" id="jobInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md transition-all" style="border-color: var(--color-border);" onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'" onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" placeholder="Job Number" required />
                             <div id="jobLoader" class="absolute right-3 top-3 hidden">
-                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" 
-                                     viewBox="0 0 24 24" style="color: var(--color-primary);">
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="color: var(--color-primary);">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" 
-                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                             </div>
                         </div>
-                        
-                        <p class="mt-1.5 text-xs" style="color: var(--color-text-secondary);">
-                            Job must be 00 (Non RN)
-                        </p>
+                        <p class="mt-1.5 text-xs" style="color: var(--color-text-secondary);">Job must be 00 (Non RN)</p>
                     </div>
 
-                    <!-- STOCK CODE -->
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">
-                            Stock Code
-                        </label>
-                        <input asp-for="StockCode" 
-                               id="stockCodeInput" 
-                               type="text" 
-                               class="w-full px-4 py-2.5 text-sm border rounded-md"
-                               style="background-color: var(--color-bg-light); border-color: var(--color-border); color: var(--color-text-secondary);"
-                               readonly 
-                               placeholder="Auto-filled" />
-                       
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Stock Code</label>
+                        <input asp-for="StockCode" id="stockCodeInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md" style="background-color: var(--color-bg-light); border-color: var(--color-border); color: var(--color-text-secondary);" readonly placeholder="Auto-filled" />
                     </div>
 
-                    <!-- RN JOB -->
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">
-                            RN Job
-                        </label>
-                        <input id="rnJobInput" 
-                               type="text" 
-                               class="w-full px-4 py-2.5 text-sm border rounded-md"
-                               style="background-color: var(--color-bg-light); border-color: var(--color-border); color: var(--color-text-secondary);"
-                               readonly 
-                               placeholder="-" />
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">RN Job</label>
+                        <input id="rnJobInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md" style="background-color: var(--color-bg-light); border-color: var(--color-border); color: var(--color-text-secondary);" readonly placeholder="-" />
                     </div>
 
-                    <!-- ADD DOWNTIME BUTTON -->
-                    <button type="button" 
-                            id="addDowntimeBtn" 
-                            class="w-full py-2.5 px-4 rounded-md font-semibold text-sm text-white transition-all duration-200 mb-3"
-                            style="background-color: var(--color-primary); box-shadow: var(--shadow-md);"
-                            onmouseover="this.style.transform = 'translateY(-2px)'; this.style.boxShadow = 'var(--shadow-lg)'"
-                            onmouseout="this.style.transform = 'translateY(0)'; this.style.boxShadow = 'var(--shadow-md)'">
-                        Add Downtime
-                    </button>
+                    <button type="button" id="addDowntimeBtn" class="w-full py-2.5 px-4 rounded-md font-semibold text-sm text-white transition-all duration-200 mb-3" style="background-color: var(--color-primary); box-shadow: var(--shadow-md);" onmouseover="this.style.transform = 'translateY(-2px)'; this.style.boxShadow = 'var(--shadow-lg)'" onmouseout="this.style.transform = 'translateY(0)'; this.style.boxShadow = 'var(--shadow-md)'">Add Downtime</button>
 
                     <hr style="border-color: var(--color-border); margin: 1.5rem 0;" />
 
-                    <!-- RUN TIME -->
-                    <div class="mb-4 p-4 rounded-md" 
-                         style="background-color: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2);">
+                    <div class="mb-4 p-4 rounded-md" style="background-color: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2);">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-semibold" style="color: var(--color-text-primary);">
-                                Run Time
-                            </span>
+                            <span class="text-sm font-semibold" style="color: var(--color-text-primary);">Run Time</span>
                             <div class="flex items-center gap-2">
-                                <input id="runTimeInput" 
-                                       type="number" 
-                                       step="0.01" 
-                                       value="0.00" 
-                                       class="w-24 px-3 py-1.5 text-sm font-semibold text-right rounded-md border"
-                                       style="border-color: var(--color-border); color: var(--color-warning);" />
+                                <input id="runTimeInput" type="number" step="0.01" value="0.00" class="w-24 px-3 py-1.5 text-sm font-semibold text-right rounded-md border" style="border-color: var(--color-border); color: var(--color-warning);" />
                                 <span class="text-xs" style="color: var(--color-text-secondary);">hrs</span>
                             </div>
                         </div>
-                        <p class="text-xs" style="color: var(--color-text-secondary);">
-                            Calculated base on 8hrs minus Dt & No Job
-                        </p>
+                        <p class="text-xs" style="color: var(--color-text-secondary);">Calculated base on 8hrs minus Dt & No Job</p>
                     </div>
 
-                    <!-- QUANTITY -->
                     <div class="flex items-center justify-between">
-                        <span class="text-sm font-semibold" style="color: var(--color-text-primary);">
-                            Quantity
-                        </span>
-                        <input id="quantityInput" 
-                               type="number" 
-                               step="0.01" 
-                               class="w-28 px-3 py-1.5 text-sm text-right border rounded-md"
-                               style="border-color: var(--color-border);" />
+                        <span class="text-sm font-semibold" style="color: var(--color-text-primary);">Quantity</span>
+                        <input id="quantityInput" type="number" step="0.01" class="w-28 px-3 py-1.5 text-sm text-right border rounded-md" style="border-color: var(--color-border);" />
                     </div>
 
                 </div>
             </div>
 
-            <!-- ========== RIGHT COLUMN: DOWNTIME TABLE ========== -->
             <div class="lg:col-span-3">
                 <div class="bg-white rounded-lg overflow-hidden flex flex-col h-full" style="box-shadow: var(--shadow-md);">
                     
-                    <!-- TABLE HEADER -->
-                    <div class="px-6 py-4 border-b flex items-center justify-between" 
-                         style="background-color: var(--color-bg-light); border-color: var(--color-border);">
-                        <h2 class="text-lg font-bold" style="color: var(--color-text-primary);">
-                            Downtime Entries
-                        </h2>
-                        <span id="entryCount" 
-                              class="text-xs font-semibold px-3 py-1.5 rounded-md" 
-                              style="background-color: rgba(59, 130, 246, 0.1); color: var(--color-primary);">
-                            0 entries
-                        </span>
+                    <div class="px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--color-bg-light); border-color: var(--color-border);">
+                        <h2 class="text-lg font-bold" style="color: var(--color-text-primary);">Downtime Entries</h2>
+                        <span id="entryCount" class="text-xs font-semibold px-3 py-1.5 rounded-md" style="background-color: rgba(59, 130, 246, 0.1); color: var(--color-primary);">0 entries</span>
                     </div>
 
-                    <!-- TABLE SCROLLABLE AREA -->
                     <div class="flex-1 overflow-auto">
                         <table class="w-full text-sm border-collapse">
-                            <!-- TABLE HEAD -->
-                            <thead class="sticky top-0" 
-                                   style="background-color: var(--color-bg-light); border-bottom: 1px solid var(--color-border);">
+                            <thead class="sticky top-0" style="background-color: var(--color-bg-light); border-bottom: 1px solid var(--color-border);">
                                 <tr>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" 
-                                        style="color: var(--color-text-primary);">
-                                        Action
-                                    </th>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" 
-                                        style="color: var(--color-text-primary);">
-                                        Group Code
-                                    </th>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" 
-                                        style="color: var(--color-text-primary);">
-                                        Code
-                                    </th>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" 
-                                        style="color: var(--color-text-primary);">
-                                        Description
-                                    </th>
-                                    <th class="px-6 py-3 text-right font-semibold text-xs" 
-                                        style="color: var(--color-text-primary);">
-                                        Downtime
-                                    </th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Action</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Group Code</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Code</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Description</th>
+                                    <th class="px-6 py-3 text-right font-semibold text-xs" style="color: var(--color-text-primary);">Downtime</th>
                                 </tr>
                             </thead>
-
-                            <!-- TABLE BODY -->
                             <tbody id="downtimeTableBody">
                                 <tr>
                                     <td colspan="5" class="px-6 py-16 text-center">
-                                        <svg class="mx-auto h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" 
-                                             stroke="currentColor" style="color: #cbd5e1;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        <svg class="mx-auto h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #cbd5e1;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        <p class="font-medium" style="color: var(--color-text-secondary);">
-                                            Belum ada downtime entry
-                                        </p>
-                                        <p class="text-xs mt-1" style="color: var(--color-text-secondary);">
-                                            Pilih Machine, isi Job, lalu klik "Add Downtime"
-                                        </p>
+                                        <p class="font-medium" style="color: var(--color-text-secondary);">Belum ada downtime entry</p>
+                                        <p class="text-xs mt-1" style="color: var(--color-text-secondary);">Pilih Machine, isi Job, lalu klik "Add Downtime"</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- TABLE FOOTER -->
-                    <div class="px-6 py-4 border-t flex items-center justify-between" 
-                         style="background-color: var(--color-bg-light); border-color: var(--color-border);">
-                        <span class="text-sm font-semibold" style="color: var(--color-text-primary);">
-                            Total Downtime
-                        </span>
-                        <span id="totalDowntime" 
-                              class="text-xl font-bold px-4 py-2 rounded-md" 
-                              style="color: var(--color-danger); background-color: rgba(220, 38, 38, 0.08);">
-                            0.00 
-                            <span class="text-sm font-normal" style="color: var(--color-text-secondary);">min</span>
-                        </span>
+                    <div class="px-6 py-4 border-t flex items-center justify-between" style="background-color: var(--color-bg-light); border-color: var(--color-border);">
+                        <span class="text-sm font-semibold" style="color: var(--color-text-primary);">Total Downtime</span>
+                        <span id="totalDowntime" class="text-xl font-bold px-4 py-2 rounded-md" style="color: var(--color-danger); background-color: rgba(220, 38, 38, 0.08);">0.00 <span class="text-sm font-normal" style="color: var(--color-text-secondary);">min</span></span>
                     </div>
                 </div>
+            </div>
+
+            <div class="px-6 py-4 border-t bg-gray-50">
+                <button type="button" onclick="DownTimeApp.postDownTimeToServer()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">Post to Database</button>
             </div>
 
         </form>
     </div>
 </div>
 
-<!-- ============================================ -->
-<!-- MODAL: ADD DOWNTIME -->
-<!-- ============================================ -->
 <div id="addDowntimeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
-        
-        <!-- MODAL HEADER -->
         <div class="px-4 py-3 border-b flex justify-between items-center">
             <h3 class="font-bold">Add Down Time</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            <button onclick="DownTimeApp.closeModal()" class="text-gray-400 hover:text-gray-600">✕</button>
         </div>
-
-        <!-- MODAL BODY -->
         <div class="p-4 space-y-3">
-            
-            <!-- GROUP CODE SELECT -->
             <div>
                 <label class="block text-sm font-medium mb-1">Group Code</label>
                 <select id="groupCodeSelect" class="select2 w-full px-3 py-2 border rounded">
                     <option value="">Select Group</option>
                 </select>
-                <input type="text" 
-                       id="groupDescDisplay" 
-                       readonly 
-                       class="mt-1 w-full px-3 py-2 bg-blue-50 border rounded text-sm" />
+                <input type="text" id="groupDescDisplay" readonly class="mt-1 w-full px-3 py-2 bg-blue-50 border rounded text-sm" />
             </div>
-
-            <!-- CODE SELECT -->
             <div>
                 <label class="block text-sm font-medium mb-1">Code</label>
                 <select id="codeSelect" class="select2 w-full px-3 py-2 border rounded">
                     <option value="">Select Code</option>
                 </select>
-                <input type="text" 
-                       id="codeDescDisplay" 
-                       readonly 
-                       class="mt-1 w-full px-3 py-2 bg-blue-50 border rounded text-sm" />
+                <input type="text" id="codeDescDisplay" readonly class="mt-1 w-full px-3 py-2 bg-blue-50 border rounded text-sm" />
             </div>
-
-            <!-- DOWNTIME MINUTES INPUT -->
             <div>
                 <label class="block text-sm font-medium mb-1">Downtime (Minutes)</label>
-                <input type="number" 
-                       id="downtimeMinutesInput" 
-                       min="1" 
-                       class="w-full px-3 py-2 border rounded" />
+                <input type="number" id="downtimeMinutesInput" min="1" class="w-full px-3 py-2 border rounded" />
             </div>
-
-            <!-- REMARK TEXTAREA -->
             <div>
                 <label class="block text-sm font-medium mb-1">Remark</label>
-                <textarea id="remarkInput" 
-                          rows="3" 
-                          maxlength="255" 
-                          class="w-full px-3 py-2 border rounded"></textarea>
-                <p class="text-xs text-right text-gray-500">
-                    <span id="charCount">0</span>/255
-                </p>
+                <textarea id="remarkInput" rows="3" maxlength="255" class="w-full px-3 py-2 border rounded"></textarea>
+                <p class="text-xs text-right text-gray-500"><span id="charCount">0</span>/255</p>
             </div>
-
         </div>
-
-        <!-- MODAL FOOTER -->
         <div class="px-4 py-3 border-t bg-gray-50 rounded-b-xl flex gap-2">
-            <button onclick="addDowntimeEntry()" 
-                    class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">
-                Add
-            </button>
-            <button onclick="closeModal()" 
-                    class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400 text-sm">
-                Cancel
-            </button>
+            <button onclick="DownTimeApp.addDowntimeEntry()" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">Add</button>
+            <button onclick="DownTimeApp.closeModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400 text-sm">Cancel</button>
         </div>
-
     </div>
 </div>
 
-<!-- ============================================ -->
-<!-- EXTERNAL LIBRARIES - BODY END -->
-<!-- ============================================ -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<!-- ============================================ -->
-<!-- CUSTOM JAVASCRIPT -->
-<!-- ============================================ -->
-<script>
-
-$(document).ready(function() {
-    // Initialize Select2
-    $('#groupCodeSelect').select2({
-        placeholder: 'Select Group...',
-        allowClear: true,
-        width: '100%',
-        dropdownParent: $('#addDowntimeModal')
-    });
-    
-    $('#codeSelect').select2({
-        placeholder: 'Select Code...',
-        allowClear: true,
-        width: '100%',
-        dropdownParent: $('#addDowntimeModal'),
-        disabled: true // Disable dulu sampai Group dipilih
-    });
-
-    let downtimeEntries = [];
-    let nonProdGroups = [];
-
-    const machineSelect = document.getElementById('machineDropdown');
-    const jobInput = document.getElementById('jobInput');
-    const stockInput = document.getElementById('stockCodeInput');
-    const tableBody = document.getElementById('downtimeTableBody');
-    const entryCount = document.getElementById('entryCount');
-    const totalDowntime = document.getElementById('totalDowntime');
-    const runTimeInput = document.getElementById('runTimeInput');
-    const modal = document.getElementById('addDowntimeModal');
-    
-    const $groupCodeSelect = $('#groupCodeSelect');
-    const $codeSelect = $('#codeSelect');
-
-    // Clock
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-    document.getElementById('jobDate').valueAsDate = new Date();
-
-    // Load Machines
-    fetch('/Bom/GetMachines').then(res => res.json()).then(data => {
-        machineSelect.innerHTML = '<option value="">-- Select Machines --</option>';
-        if (data.success && data.data?.length) {
-            data.data.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.machine;
-                opt.textContent = m.displayText;
-                opt.dataset.wc = m.workCentre;
-                machineSelect.appendChild(opt);
-            });
-        }
-    });
-
-    machineSelect.addEventListener('change', function() {
-        const wc = this.options[this.selectedIndex]?.dataset.wc || '';
-        document.getElementById('workCentreHidden').value = wc;
-        document.getElementById('wcDisplay').textContent = wc || '-';
-    });
-
-    // Job Lookup
-    let debounceTimer;
-    jobInput.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            const job = jobInput.value.trim();
-            if (!job) { stockInput.value = ''; return; }
-            document.getElementById('jobLoader').classList.remove('hidden');
-            fetch(`/Bom/GetJobInfo?jobNumber=${encodeURIComponent(job)}`)
-                .then(res => res.json())
-                .then(json => {
-                    document.getElementById('jobLoader').classList.add('hidden');
-                    if (json.success && json.data) stockInput.value = json.data.stockCode;
-                });
-        }, 400);
-    });
-
-    // Load NonProd Groups (hanya Group Code saja)
-    async function loadNonProdGroups() {
-        try {
-            const res = await fetch('/Bom/GetNonProdGroups');
-            const json = await res.json();
-            if (json.success) {
-                nonProdGroups = json.data;
-                $groupCodeSelect.empty().append('<option value="">Select Group</option>');
-                
-                // Tampilkan hanya GrpCode, bukan DisplayText
-                nonProdGroups.forEach(g => {
-                    const opt = new Option(g.grpCode, g.grpCode, false, false);
-                    $(opt).attr('data-desc', g.grpDescription);
-                    $groupCodeSelect.append(opt);
-                });
-                
-                $groupCodeSelect.trigger('change');
-            }
-        } catch (err) { console.error('Error loading groups:', err); }
-    }
-
-    // Group Code Change - Load Codes untuk group tersebut
-    $groupCodeSelect.on('change', async function() {
-    const groupCode = this.value;
-    const selectedOpt = this.options[this.selectedIndex];
-    document.getElementById('groupDescDisplay').value = selectedOpt ? $(selectedOpt).data('desc') || '' : '';
-    
-    // Reset state
-    $codeSelect.empty().append('<option value="">Loading...</option>').prop('disabled', true).trigger('change');
-    document.getElementById('codeDescDisplay').value = '';
-    
-    if (!groupCode) { 
-        $codeSelect.empty().append('<option value="">Select Code</option>').trigger('change');
-        return; 
-    }
-
-    try {
-        const res = await fetch(`/Bom/GetNonProdCodes?groupCode=${encodeURIComponent(groupCode)}`);
-        
-        // Cek apakah response benar-benar JSON
-        if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) {
-            throw new Error(`HTTP ${res.status}: Bukan JSON valid`);
-        }
-
-        const json = await res.json();
-        
-        $codeSelect.empty().append('<option value="">Select Code</option>');
-        
-        if (json.success && json.data?.length) {
-            json.data.forEach(c => {
-                const opt = new Option(`${c.code} - ${c.description}`, c.code, false, false);
-                $(opt).attr('data-desc', c.description);
-                $codeSelect.append(opt);
-            });
-            $codeSelect.prop('disabled', false);
-        } else {
-            $codeSelect.empty().append('<option value="">Tidak ada code</option>').trigger('change');
-        }
-    } catch (err) {
-        console.error('Gagal load codes:', err);
-        $codeSelect.empty().append(`<option value="">Error: ${err.message}</option>`).prop('disabled', true).trigger('change');
-    }
-});
-
-    // Code Change - Auto-fill Description
-    $codeSelect.on('change', function() {
-        const selectedOpt = this.options[this.selectedIndex];
-        const codeDesc = selectedOpt ? $(selectedOpt).data('desc') || '' : '';
-        document.getElementById('codeDescDisplay').value = codeDesc;
-    });
-
-    // Remark Counter
-    document.getElementById('remarkInput').addEventListener('input', function() {
-        document.getElementById('charCount').textContent = this.value.length;
-    });
-
-    // Open Modal
-    document.getElementById('addDowntimeBtn').addEventListener('click', () => {
-        if (!machineSelect.value || !jobInput.value.trim()) { 
-            alert('Pilih Machine dan Job dulu!'); 
-            return; 
-        }
-        modal.classList.remove('hidden');
-        loadNonProdGroups();
-    });
-
-    // Close Modal
-    window.closeModal = function() {
-        modal.classList.add('hidden');
-        $groupCodeSelect.val(null).trigger('change');
-        $codeSelect.val(null).trigger('change').prop('disabled', true);
-        document.getElementById('groupDescDisplay').value = '';
-        document.getElementById('codeDescDisplay').value = '';
-        document.getElementById('downtimeMinutesInput').value = '';
-        document.getElementById('remarkInput').value = '';
-        document.getElementById('charCount').textContent = '0';
-    }
-
-    // Add Entry
-    window.addDowntimeEntry = function() {
-        const gc = $groupCodeSelect.val();
-        const c = $codeSelect.val();
-        const dt = parseInt(document.getElementById('downtimeMinutesInput').value) || 0;
-        
-        if (!gc || !c || dt <= 0) { 
-            alert('Lengkapi Group, Code, dan Downtime!'); 
-            return; 
-        }
-        
-        downtimeEntries.push({
-            groupCode: gc,
-            groupDescription: document.getElementById('groupDescDisplay').value,
-            code: c,
-            codeDescription: document.getElementById('codeDescDisplay').value,
-            downtimeMinutes: dt,
-            remark: document.getElementById('remarkInput').value
-        });
-        
-        updateTable();
-        closeModal();
-    }
-
-    // Update Table
-    function updateTable() {
-        if (downtimeEntries.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-16 text-center"><svg class="mx-auto h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #cbd5e1;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><p class="font-medium" style="color: var(--color-text-secondary);">Belum ada downtime entry</p></td></tr>`;
-            entryCount.textContent = '0 entries';
-        } else {
-            tableBody.innerHTML = downtimeEntries.map((e, i) => `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-6 py-3"><button onclick="deleteEntry(${i})" class="bg-red-100 hover:bg-red-200 text-red-700 font-medium text-xs px-3 py-1.5 rounded-lg transition">Delete</button></td>
-                    <td class="px-6 py-3 font-semibold">${e.groupCode}</td>
-                    <td class="px-6 py-3 text-gray-600">${e.code}</td>
-                    <td class="px-6 py-3 text-gray-700">${e.codeDescription || '-'}</td>
-                    <td class="px-6 py-3 text-right font-bold text-red-600">${e.downtimeMinutes} min</td>
-                </tr>`).join('');
-            entryCount.textContent = `${downtimeEntries.length} entr${downtimeEntries.length === 1 ? 'y' : 'ies'}`;
-        }
-        
-        const total = downtimeEntries.reduce((s, e) => s + e.downtimeMinutes, 0);
-        totalDowntime.innerHTML = `${total.toFixed(2)} <span class="text-sm font-normal" style="color: var(--color-text-secondary);">min</span>`;
-        runTimeInput.value = Math.max(0, 8 - (total / 60)).toFixed(2);
-    }
-
-    // Delete Entry
-    window.deleteEntry = function(index) {
-        if (confirm('Hapus entry ini?')) { 
-            downtimeEntries.splice(index, 1); 
-            updateTable(); 
-        }
-    }
-});
-
-</script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="~/js/downtime.js" asp-append-version="true"></script>
 }

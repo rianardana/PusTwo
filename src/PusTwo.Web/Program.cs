@@ -9,11 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(Program)); 
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.MigrationsAssembly("PusTwo.Infrastructure")));
 builder.Services.AddDbContext<SysproDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SysproConnection"), 
         sql => sql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
 builder.Services.AddScoped<ISysproService, SysproService>();
+builder.Services.AddScoped<IDownTimeService, DownTimeService>();
 
 var app = builder.Build();
 
