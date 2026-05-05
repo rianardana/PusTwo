@@ -4,8 +4,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using PusTwo.Application.DTOs.Syspro;
-using PusTwo.Application.Interfaces;
+using PusTwo.Application.Syspro.DTOs;
+using PusTwo.Application.Syspro.Interfaces;
 using PusTwo.Infrastructure.Data;
 using PusTwo.Infrastructure.Entities.Syspro;
 
@@ -53,24 +53,20 @@ namespace PusTwo.Infrastructure.Services
 
         public async Task<JobLookupDto?> GetJobInfoAsync(string jobNumber)
         {
-            try
+            if (string.IsNullOrWhiteSpace(jobNumber)) return null;
+
+            var entity = await _sysproContext.WipMasters
+                .AsNoTracking()
+                .FirstOrDefaultAsync(w => w.Job == jobNumber || w.Job.EndsWith(jobNumber));
+
+            if (entity == null) return null;
+
+            return new JobLookupDto
             {
-                return await _sysproContext.WipMasters
-                    .AsNoTracking()
-                    .Where(w => w.Job == jobNumber)
-                    .Select(w => new JobLookupDto
-                    {
-                        Job = w.Job,
-                        StockCode = w.StockCode,
-                        StockDescription = w.StockDescription
-                    })
-                    .FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching JobInfo for Job {Job}", jobNumber);
-                throw new InvalidOperationException($"Gagal mengambil data Job: {ex.Message}", ex);
-            }
+                Job = entity.Job,
+                StockCode = entity.StockCode,
+                StockDescription = entity.StockDescription
+            };
         }
 
         public async Task<List<NonProdGroupDto>> GetNonProdGroupsAsync()

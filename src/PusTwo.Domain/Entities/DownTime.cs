@@ -9,7 +9,6 @@ namespace PusTwo.Domain.Entities
         public string StockCode { get; set; } = string.Empty;
         public string GroupCode { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
         public int DowntimeMinutes { get; set; }
         public string? Remark { get; set; }
         public DateTime EntryDate { get; set; }

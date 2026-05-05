@@ -1,4 +1,4 @@
-namespace PusTwo.Application.DTOs.Syspro
+namespace PusTwo.Application.Syspro.DTOs
 {
     public class NonProdGroupDto
     {

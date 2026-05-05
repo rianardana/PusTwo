@@ -1,0 +1,33 @@
+@model PusTwo.Web.ViewModels.DownTimeBatchLineViewModel
+
+<tr class="border-b border-gray-200 hover:bg-blue-50 transition-colors duration-150" data-entry-id="@Model.Id">
+    <td class="px-6 py-3 text-xs text-gray-500 font-medium">
+        @Model.Id
+    </td>
+    <td class="px-6 py-3">
+        <span class="font-semibold text-gray-800 bg-blue-100 px-2 py-1 rounded text-xs">
+            @Model.GroupCode
+        </span>
+    </td>
+    <td class="px-6 py-3">
+        <span class="font-semibold text-gray-800 bg-indigo-100 px-2 py-1 rounded text-xs">
+            @Model.Code
+        </span>
+    </td>
+    <td class="px-6 py-3 text-right">
+        <span class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-md text-sm">
+            @Model.DowntimeMinutes
+        </span>
+        <span class="text-xs text-gray-500 ml-1">min</span>
+    </td>
+    <td class="px-6 py-3 text-xs text-gray-600 max-w-xs truncate" title="@Model.Remark">
+        @(string.IsNullOrEmpty(Model.Remark) ? "-" : Model.Remark)
+    </td>
+    <td class="px-6 py-3 text-center">
+        <button type="button" 
+                onclick="removeEntry(@Model.Id)" 
+                class="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded-md transition-all duration-150 text-xs font-semibold border border-transparent hover:border-red-200">
+            Hapus
+        </button>
+    </td>
+</tr>
