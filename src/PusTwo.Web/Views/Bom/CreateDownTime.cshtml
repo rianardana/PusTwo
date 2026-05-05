@@ -1,226 +1,146 @@
-@model PusTwo.Web.ViewModels.CreateDownTimeViewModel
-
+@model PusTwo.Web.ViewModels.DownTimeBatchFormViewModel
 @{
     ViewData["Title"] = "Casting Downtime Info";
 }
 
 <style>
-    :root {
-        --color-primary: #1e40af;
-        --color-primary-light: #3b82f6;
-        --color-primary-dark: #1e3a8a;
-        --color-text-primary: #0f172a;
-        --color-text-secondary: #475569;
-        --color-border: #e2e8f0;
-        --color-bg-light: #f1f5f9;
-        --color-danger: #dc2626;
-        --color-success: #16a34a;
-        --color-warning: #f59e0b;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    body {
-        background-color: var(--color-bg-light);
-        color: var(--color-text-primary);
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-        outline: none;
-    }
+    :root { --primary: #1e40af; --primary-light: #3b82f6; --primary-dark: #1e3a8a; --text-main: #0f172a; --text-sec: #475569; --border: #e2e8f0; --bg: #f1f5f9; --danger: #dc2626; --success: #16a34a; --warning: #f59e0b; }
+    body { background-color: var(--bg); color: var(--text-main); font-family: sans-serif; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1); }
+    .hidden { display: none !important; }
 </style>
 
 <div class="min-h-screen" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
         <div class="mb-8">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h1 class="text-4xl font-bold mb-1" style="color: var(--color-text-primary);">Casting Downtime Info</h1>
-                    <p style="color: var(--color-text-secondary);">Catat downtime mesin casting secara real-time</p>
+                    <h1 class="text-4xl font-bold mb-1" style="color: var(--text-main);">Casting Downtime Info</h1>
+                    <p style="color: var(--text-sec);">Catat downtime mesin casting secara real-time</p>
                 </div>
-                <div class="flex items-center gap-3 px-4 py-2.5 rounded-lg" style="background-color: var(--color-primary); color: white; box-shadow: var(--shadow-md);">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                <div class="flex items-center gap-3 px-4 py-2.5 rounded-lg" style="background-color: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <span id="currentTime" class="font-semibold text-sm">--:--</span>
                 </div>
             </div>
-            <div style="height: 4px; width: 60px; background-color: var(--color-primary-light); border-radius: 2px;"></div>
+            <div style="height: 4px; width: 60px; background-color: var(--primary-light); border-radius: 2px;"></div>
         </div>
 
-        <form asp-action="CreateDownTime" method="post" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <form id="downtimeForm" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            @Html.AntiForgeryToken()
             
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg p-6" style="box-shadow: var(--shadow-md);">
-                    
+                <div class="bg-white rounded-lg p-6 shadow-lg">
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Job Date</label>
-                        <input type="date" id="jobDate" class="w-full px-4 py-2.5 text-sm border rounded-md transition-all" style="border-color: var(--color-border);" onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'" onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" />
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--text-main);">Entry Date</label>
+                        <input type="date" asp-for="EntryDate" class="w-full px-4 py-2.5 text-sm border rounded-md" style="border-color: var(--border);" />
+                        <span asp-validation-for="EntryDate" class="text-red-600 text-xs mt-1 block"></span>
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-3" style="color: var(--color-text-primary);">Shift</label>
+                        <label class="block text-sm font-semibold mb-3" style="color: var(--text-main);">Shift</label>
                         <div class="grid grid-cols-3 gap-2">
-                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all" style="border: 2px solid var(--color-primary); background-color: rgba(59, 130, 246, 0.05);">
-                                <input type="radio" name="Shift" value="1" class="w-4 h-4 mr-1.5" checked style="accent-color: var(--color-primary);" />
-                                <span class="text-xs font-semibold" style="color: var(--color-primary);">1st</span>
+                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all" style="border: 2px solid var(--primary); background-color: rgba(59, 130, 246, 0.05);">
+                                <input type="radio" asp-for="Shift" value="1" class="w-4 h-4 mr-1.5" checked style="accent-color: var(--primary);" />
+                                <span class="text-xs font-semibold" style="color: var(--primary);">1st</span>
                             </label>
-                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all hover:bg-opacity-50" style="border: 2px solid var(--color-border);">
-                                <input type="radio" name="Shift" value="2" class="w-4 h-4 mr-1.5" style="accent-color: var(--color-primary);" />
-                                <span class="text-xs font-semibold" style="color: var(--color-text-secondary);">2nd</span>
+                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all" style="border: 2px solid var(--border);">
+                                <input type="radio" asp-for="Shift" value="2" class="w-4 h-4 mr-1.5" style="accent-color: var(--primary);" />
+                                <span class="text-xs font-semibold" style="color: var(--text-sec);">2nd</span>
                             </label>
-                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all hover:bg-opacity-50" style="border: 2px solid var(--color-border);">
-                                <input type="radio" name="Shift" value="3" class="w-4 h-4 mr-1.5" style="accent-color: var(--color-primary);" />
-                                <span class="text-xs font-semibold" style="color: var(--color-text-secondary);">3rd</span>
+                            <label class="flex items-center justify-center p-2.5 border rounded-md cursor-pointer transition-all" style="border: 2px solid var(--border);">
+                                <input type="radio" asp-for="Shift" value="3" class="w-4 h-4 mr-1.5" style="accent-color: var(--primary);" />
+                                <span class="text-xs font-semibold" style="color: var(--text-sec);">3rd</span>
                             </label>
                         </div>
                     </div>
 
-                    <hr style="border-color: var(--color-border); margin: 1.5rem 0;" />
+                    <hr style="border-color: var(--border); margin: 1.5rem 0;" />
 
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Machine ID</label>
-                        <select id="machineDropdown" asp-for="Machine" class="w-full px-4 py-2.5 text-sm border rounded-md bg-white transition-all" style="border-color: var(--color-border);" onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'" onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" required>
-                            <option value="">-- Select Machines --</option>
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--text-main);">Machine ID <span class="text-red-500">*</span></label>
+                        <select id="machineDropdown" asp-for="Machine" class="w-full px-4 py-2.5 text-sm border rounded-md bg-white" style="border-color: var(--border);" required>
+                            <option value="">-- Select Machine --</option>
                         </select>
+                        <span asp-validation-for="Machine" class="text-red-600 text-xs mt-1 block"></span>
                         <input type="hidden" asp-for="WorkCentre" id="workCentreHidden" />
-                        <p class="mt-2 text-xs" style="color: var(--color-text-secondary);">WorkCentre: <span id="wcDisplay" class="font-semibold px-2 py-1 rounded text-xs" style="color: var(--color-primary); background-color: rgba(59, 130, 246, 0.08);">-</span></p>
+                        <p class="mt-2 text-xs" style="color: var(--text-sec);">WorkCentre: <span id="wcDisplay" class="font-semibold px-2 py-1 rounded text-xs" style="color: var(--primary); background-color: rgba(59, 130, 246, 0.08);">-</span></p>
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Job Number</label>
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--text-main);">Job Number <span class="text-red-500">*</span></label>
                         <div class="relative">
-                            <input asp-for="JobNumber" id="jobInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md transition-all" style="border-color: var(--color-border);" onfocus="this.style.borderColor = 'var(--color-primary)'; this.style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.08)'" onblur="this.style.borderColor = 'var(--color-border)'; this.style.boxShadow = 'none'" placeholder="Job Number" required />
+                            <input id="jobInput" asp-for="JobNumber" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md" style="border-color: var(--border);" placeholder="Job Number" required />
                             <div id="jobLoader" class="absolute right-3 top-3 hidden">
-                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="color: var(--color-primary);">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="color: var(--primary);"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </div>
                         </div>
-                        <p class="mt-1.5 text-xs" style="color: var(--color-text-secondary);">Job must be 00 (Non RN)</p>
+                        <span asp-validation-for="JobNumber" class="text-red-600 text-xs mt-1 block"></span>
+                        <p class="mt-1.5 text-xs" style="color: var(--text-sec);">Job must be 00 (Non RN)</p>
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">Stock Code</label>
-                        <input asp-for="StockCode" id="stockCodeInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md" style="background-color: var(--color-bg-light); border-color: var(--color-border); color: var(--color-text-secondary);" readonly placeholder="Auto-filled" />
+                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--text-main);">Stock Code</label>
+                        <input id="stockCodeInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md" style="background-color: var(--bg); border-color: var(--border); color: var(--text-sec);" readonly placeholder="Auto-filled" />
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-sm font-semibold mb-2.5" style="color: var(--color-text-primary);">RN Job</label>
-                        <input id="rnJobInput" type="text" class="w-full px-4 py-2.5 text-sm border rounded-md" style="background-color: var(--color-bg-light); border-color: var(--color-border); color: var(--color-text-secondary);" readonly placeholder="-" />
-                    </div>
-
-                    <button type="button" id="addDowntimeBtn" class="w-full py-2.5 px-4 rounded-md font-semibold text-sm text-white transition-all duration-200 mb-3" style="background-color: var(--color-primary); box-shadow: var(--shadow-md);" onmouseover="this.style.transform = 'translateY(-2px)'; this.style.boxShadow = 'var(--shadow-lg)'" onmouseout="this.style.transform = 'translateY(0)'; this.style.boxShadow = 'var(--shadow-md)'">Add Downtime</button>
-
-                    <hr style="border-color: var(--color-border); margin: 1.5rem 0;" />
-
-                    <div class="mb-4 p-4 rounded-md" style="background-color: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2);">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-semibold" style="color: var(--color-text-primary);">Run Time</span>
-                            <div class="flex items-center gap-2">
-                                <input id="runTimeInput" type="number" step="0.01" value="0.00" class="w-24 px-3 py-1.5 text-sm font-semibold text-right rounded-md border" style="border-color: var(--color-border); color: var(--color-warning);" />
-                                <span class="text-xs" style="color: var(--color-text-secondary);">hrs</span>
-                            </div>
-                        </div>
-                        <p class="text-xs" style="color: var(--color-text-secondary);">Calculated base on 8hrs minus Dt & No Job</p>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-semibold" style="color: var(--color-text-primary);">Quantity</span>
-                        <input id="quantityInput" type="number" step="0.01" class="w-28 px-3 py-1.5 text-sm text-right border rounded-md" style="border-color: var(--color-border);" />
-                    </div>
-
+                
+                    <button type="button" id="addDowntimeBtn" class="w-full py-2.5 px-4 rounded-md font-semibold text-sm text-white transition-all duration-200 mb-3 shadow-md hover:shadow-lg transform hover:-translate-y-0.5" style="background-color: var(--primary);">
+                        Add Downtime
+                    </button>
+                    
+                    <hr style="border-color: var(--border); margin: 1.5rem 0;" />
                 </div>
             </div>
 
             <div class="lg:col-span-3">
-                <div class="bg-white rounded-lg overflow-hidden flex flex-col h-full" style="box-shadow: var(--shadow-md);">
-                    
-                    <div class="px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--color-bg-light); border-color: var(--color-border);">
-                        <h2 class="text-lg font-bold" style="color: var(--color-text-primary);">Downtime Entries</h2>
-                        <span id="entryCount" class="text-xs font-semibold px-3 py-1.5 rounded-md" style="background-color: rgba(59, 130, 246, 0.1); color: var(--color-primary);">0 entries</span>
+                <div class="bg-white rounded-lg overflow-hidden flex flex-col h-full shadow-lg">
+                    <div class="px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--bg); border-color: var(--border);">
+                        <h2 class="text-lg font-bold" style="color: var(--text-main);">Downtime Entries</h2>
+                        <span id="entryCount" class="text-xs font-semibold px-3 py-1.5 rounded-md" style="background-color: rgba(59, 130, 246, 0.1); color: var(--primary);">0 entries</span>
                     </div>
-
+                    
                     <div class="flex-1 overflow-auto">
                         <table class="w-full text-sm border-collapse">
-                            <thead class="sticky top-0" style="background-color: var(--color-bg-light); border-bottom: 1px solid var(--color-border);">
+                            <thead class="sticky top-0" style="background-color: var(--bg); border-bottom: 1px solid var(--border);">
                                 <tr>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Action</th>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Group Code</th>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Code</th>
-                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--color-text-primary);">Description</th>
-                                    <th class="px-6 py-3 text-right font-semibold text-xs" style="color: var(--color-text-primary);">Downtime</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--text-main);">#</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--text-main);">Group</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--text-main);">Code</th>
+                                    <th class="px-6 py-3 text-right font-semibold text-xs" style="color: var(--text-main);">Minutes</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-xs" style="color: var(--text-main);">Remark</th>
+                                    <th class="px-6 py-3 text-center font-semibold text-xs" style="color: var(--text-main);">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="downtimeTableBody">
-                                <tr>
-                                    <td colspan="5" class="px-6 py-16 text-center">
-                                        <svg class="mx-auto h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #cbd5e1;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <p class="font-medium" style="color: var(--color-text-secondary);">Belum ada downtime entry</p>
-                                        <p class="text-xs mt-1" style="color: var(--color-text-secondary);">Pilih Machine, isi Job, lalu klik "Add Downtime"</p>
-                                    </td>
-                                </tr>
+                                @await Html.PartialAsync("_DowntimeTable", Model.Entries)
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="px-6 py-4 border-t flex items-center justify-between" style="background-color: var(--color-bg-light); border-color: var(--color-border);">
-                        <span class="text-sm font-semibold" style="color: var(--color-text-primary);">Total Downtime</span>
-                        <span id="totalDowntime" class="text-xl font-bold px-4 py-2 rounded-md" style="color: var(--color-danger); background-color: rgba(220, 38, 38, 0.08);">0.00 <span class="text-sm font-normal" style="color: var(--color-text-secondary);">min</span></span>
+                    <div class="px-6 py-4 border-t flex items-center justify-between" style="background-color: var(--bg); border-color: var(--border);">
+                        <span class="text-sm font-semibold" style="color: var(--text-main);">Total Downtime</span>
+                        <span id="totalDowntime" class="text-xl font-bold px-4 py-2 rounded-md" style="color: var(--danger); background-color: rgba(220, 38, 38, 0.08);">0 <span class="text-sm font-normal" style="color: var(--text-sec);">min</span></span>
                     </div>
                 </div>
-            </div>
 
-            <div class="px-6 py-4 border-t bg-gray-50">
-                <button type="button" onclick="DownTimeApp.postDownTimeToServer()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">Post to Database</button>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" onclick="resetForm()" class="px-6 py-3 border rounded-lg font-semibold text-sm transition-all" style="border-color: var(--border); color: var(--text-sec);">
+                        Reset
+                    </button>
+                    <button type="submit" class="px-8 py-3 rounded-lg font-semibold text-sm text-white transition-all shadow-lg flex items-center gap-2 hover:shadow-xl transform hover:-translate-y-0.5" style="background-color: var(--success);">
+                        
+                        Posting
+                    </button>
+                </div>
             </div>
-
         </form>
     </div>
 </div>
 
 <div id="addDowntimeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
-        <div class="px-4 py-3 border-b flex justify-between items-center">
-            <h3 class="font-bold">Add Down Time</h3>
-            <button onclick="DownTimeApp.closeModal()" class="text-gray-400 hover:text-gray-600">✕</button>
-        </div>
-        <div class="p-4 space-y-3">
-            <div>
-                <label class="block text-sm font-medium mb-1">Group Code</label>
-                <select id="groupCodeSelect" class="select2 w-full px-3 py-2 border rounded">
-                    <option value="">Select Group</option>
-                </select>
-                <input type="text" id="groupDescDisplay" readonly class="mt-1 w-full px-3 py-2 bg-blue-50 border rounded text-sm" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium mb-1">Code</label>
-                <select id="codeSelect" class="select2 w-full px-3 py-2 border rounded">
-                    <option value="">Select Code</option>
-                </select>
-                <input type="text" id="codeDescDisplay" readonly class="mt-1 w-full px-3 py-2 bg-blue-50 border rounded text-sm" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium mb-1">Downtime (Minutes)</label>
-                <input type="number" id="downtimeMinutesInput" min="1" class="w-full px-3 py-2 border rounded" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium mb-1">Remark</label>
-                <textarea id="remarkInput" rows="3" maxlength="255" class="w-full px-3 py-2 border rounded"></textarea>
-                <p class="text-xs text-right text-gray-500"><span id="charCount">0</span>/255</p>
-            </div>
-        </div>
-        <div class="px-4 py-3 border-t bg-gray-50 rounded-b-xl flex gap-2">
-            <button onclick="DownTimeApp.addDowntimeEntry()" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">Add</button>
-            <button onclick="DownTimeApp.closeModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400 text-sm">Cancel</button>
-        </div>
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+        @await Html.PartialAsync("_AddEntryModal")
     </div>
 </div>
 
@@ -228,5 +148,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/downtime.js" asp-append-version="true"></script>
 }

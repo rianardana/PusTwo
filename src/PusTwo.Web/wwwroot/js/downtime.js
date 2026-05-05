@@ -1,199 +1,234 @@
-const DownTimeApp = (function() {
-    'use strict';
-    let downtimeEntries = [];
-    let nonProdGroups = [];
-    let debounceTimer;
-    const elements = {};
+let downtimeEntries = [];
+let entryCounter = 0;
 
-    function init() {
-        cacheElements();
-        initSelect2();
-        initClock();
-        initEventListeners();
-        loadMachines();
-        setDefaultDate();
+$(document).ready(function() {
+    updateClock();
+    setInterval(updateClock, 1000);
+    loadMachines();
+    loadNonProdGroups();
+    
+    $('#machineDropdown').on('change', function() {
+        const wc = $(this).find('option:selected').data('workcentre') || '-';
+        $('#workCentreHidden').val(wc);
+        $('#wcDisplay').text(wc);
+    });
+    
+    $('#jobInput').on('blur', function() {
+        const job = $(this).val().trim();
+        if (job) loadJobInfo(job);
+    });
+    
+    $('#addDowntimeBtn').on('click', openModal);
+    
+    $('#groupCodeSelect').on('change', function() {
+        const group = $(this).val();
+        if (group) loadNonProdCodes(group);
+        else $('#codeSelect').prop('disabled', true).html('<option value="">-- Select Group First --</option>');
+    });
+    
+    $('#downtimeForm').on('submit', function(e) {
+        e.preventDefault();
+        submitForm();
+    });
+});
+
+function updateClock() {
+    $('#currentTime').text(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+}
+
+async function loadMachines() {
+    const res = await $.get('/Bom/GetMachines');
+    if (res.success) {
+        const opts = res.data.map(m => `<option value="${m.machine}" data-workcentre="${m.workCentre}">${m.displayText}</option>`).join('');
+        $('#machineDropdown').append(opts).select2({ placeholder: 'Select Machine', width: '100%' });
     }
+}
 
-    function cacheElements() {
-        elements.machineSelect = document.getElementById('machineDropdown');
-        elements.jobInput = document.getElementById('jobInput');
-        elements.stockInput = document.getElementById('stockCodeInput');
-        elements.tableBody = document.getElementById('downtimeTableBody');
-        elements.entryCount = document.getElementById('entryCount');
-        elements.totalDowntime = document.getElementById('totalDowntime');
-        elements.runTimeInput = document.getElementById('runTimeInput');
-        elements.modal = document.getElementById('addDowntimeModal');
-        elements.jobLoader = document.getElementById('jobLoader');
-        elements.workCentreHidden = document.getElementById('workCentreHidden');
-        elements.wcDisplay = document.getElementById('wcDisplay');
-        elements.groupDescDisplay = document.getElementById('groupDescDisplay');
-        elements.codeDescDisplay = document.getElementById('codeDescDisplay');
-        elements.downtimeMinutesInput = document.getElementById('downtimeMinutesInput');
-        elements.remarkInput = document.getElementById('remarkInput');
-        elements.charCount = document.getElementById('charCount');
-        elements.addDowntimeBtn = document.getElementById('addDowntimeBtn');
-        elements.currentTime = document.getElementById('currentTime');
-        elements.jobDate = document.getElementById('jobDate');
-        elements.groupCodeSelect = $('#groupCodeSelect');
-        elements.codeSelect = $('#codeSelect');
-    }
-
-    function initSelect2() {
-        elements.groupCodeSelect.select2({ placeholder: 'Select Group...', allowClear: true, width: '100%', dropdownParent: $('#addDowntimeModal') });
-        elements.codeSelect.select2({ placeholder: 'Select Code...', allowClear: true, width: '100%', dropdownParent: $('#addDowntimeModal'), disabled: true });
-    }
-
-    function initClock() { updateClock(); setInterval(updateClock, 1000); }
-    function updateClock() { const now = new Date(); if (elements.currentTime) elements.currentTime.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
-    function setDefaultDate() { if (elements.jobDate) elements.jobDate.valueAsDate = new Date(); }
-
-    function initEventListeners() {
-        if (elements.machineSelect) elements.machineSelect.addEventListener('change', onMachineChange);
-        if (elements.jobInput) elements.jobInput.addEventListener('input', onJobInput);
-        elements.groupCodeSelect.on('change', onGroupCodeChange);
-        elements.codeSelect.on('change', onCodeChange);
-        if (elements.remarkInput) elements.remarkInput.addEventListener('input', onRemarkInput);
-        if (elements.addDowntimeBtn) elements.addDowntimeBtn.addEventListener('click', openModal);
-    }
-
-    function onMachineChange(e) { const wc = e.target.options[e.target.selectedIndex]?.dataset.wc || ''; if (elements.workCentreHidden) elements.workCentreHidden.value = wc; if (elements.wcDisplay) elements.wcDisplay.textContent = wc || '-'; }
-
-    function onJobInput() {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            const job = elements.jobInput.value.trim();
-            if (!job) { if (elements.stockInput) elements.stockInput.value = ''; return; }
-            if (elements.jobLoader) elements.jobLoader.classList.remove('hidden');
-            fetch(`/Bom/GetJobInfo?jobNumber=${encodeURIComponent(job)}`).then(res => res.json()).then(json => {
-                if (elements.jobLoader) elements.jobLoader.classList.add('hidden');
-                if (json.success && json.data && elements.stockInput) elements.stockInput.value = json.data.stockCode;
-            }).catch(() => { if (elements.jobLoader) elements.jobLoader.classList.add('hidden'); });
-        }, 400);
-    }
-
-    async function loadMachines() {
-        try {
-            const res = await fetch('/Bom/GetMachines');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            if (elements.machineSelect && data.success && data.data?.length) {
-                elements.machineSelect.innerHTML = '<option value="">-- Select Machines --</option>';
-                data.data.forEach(m => { const opt = document.createElement('option'); opt.value = m.machine; opt.textContent = m.displayText; opt.dataset.wc = m.workCentre; elements.machineSelect.appendChild(opt); });
-            }
-        } catch (err) { console.error('Error loading machines:', err); }
-    }
-
-    async function loadNonProdGroups() {
-        try {
-            const res = await fetch('/Bom/GetNonProdGroups');
-            const json = await res.json();
-            if (json.success) {
-                nonProdGroups = json.data;
-                elements.groupCodeSelect.empty().append('<option value="">Select Group</option>');
-                nonProdGroups.forEach(g => { const opt = new Option(g.grpCode, g.grpCode, false, false); $(opt).attr('data-desc', g.grpDescription); elements.groupCodeSelect.append(opt); });
-                elements.groupCodeSelect.trigger('change');
-            }
-        } catch (err) { console.error('Error loading groups:', err); }
-    }
-
-    async function onGroupCodeChange() {
-        const groupCode = this.value;
-        const selectedOpt = this.options[this.selectedIndex];
-        if (elements.groupDescDisplay) elements.groupDescDisplay.value = selectedOpt ? $(selectedOpt).data('desc') || '' : '';
-        elements.codeSelect.empty().append('<option value="">Loading...</option>').prop('disabled', true).trigger('change');
-        if (elements.codeDescDisplay) elements.codeDescDisplay.value = '';
-        if (!groupCode) { elements.codeSelect.empty().append('<option value="">Select Code</option>').trigger('change'); return; }
-        try {
-            const res = await fetch(`/Bom/GetNonProdCodes?groupCode=${encodeURIComponent(groupCode)}`);
-            if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-            elements.codeSelect.empty().append('<option value="">Select Code</option>');
-            if (json.success && json.data?.length) {
-                json.data.forEach(c => { const opt = new Option(`${c.code} - ${c.description}`, c.code, false, false); $(opt).attr('data-desc', c.description); elements.codeSelect.append(opt); });
-                elements.codeSelect.prop('disabled', false);
-            }
-        } catch (err) { console.error('Error loading codes:', err); elements.codeSelect.empty().append(`<option value="">Error</option>`).prop('disabled', true).trigger('change'); }
-    }
-
-    function onCodeChange() { const selectedOpt = this.options[this.selectedIndex]; if (elements.codeDescDisplay) elements.codeDescDisplay.value = selectedOpt ? $(selectedOpt).data('desc') || '' : ''; }
-    function onRemarkInput(e) { if (elements.charCount) elements.charCount.textContent = e.target.value.length; }
-
-    function openModal() {
-        if (!elements.machineSelect?.value || !elements.jobInput?.value.trim()) { alert('Pilih Machine dan Job dulu!'); return; }
-        if (elements.modal) elements.modal.classList.remove('hidden');
-        loadNonProdGroups();
-    }
-
-    function closeModal() {
-        if (elements.modal) elements.modal.classList.add('hidden');
-        elements.groupCodeSelect.val(null).trigger('change');
-        elements.codeSelect.val(null).trigger('change').prop('disabled', true);
-        if (elements.groupDescDisplay) elements.groupDescDisplay.value = '';
-        if (elements.codeDescDisplay) elements.codeDescDisplay.value = '';
-        if (elements.downtimeMinutesInput) elements.downtimeMinutesInput.value = '';
-        if (elements.remarkInput) elements.remarkInput.value = '';
-        if (elements.charCount) elements.charCount.textContent = '0';
-    }
-
-    function addDowntimeEntry() {
-        const gc = elements.groupCodeSelect.val();
-        const c = elements.codeSelect.val();
-        const dt = parseInt(elements.downtimeMinutesInput?.value) || 0;
-        if (!gc || !c || dt <= 0) { alert('Lengkapi Group, Code, dan Downtime!'); return; }
-        downtimeEntries.push({ groupCode: gc, groupDescription: elements.groupDescDisplay?.value || '', code: c, codeDescription: elements.codeDescDisplay?.value || '', downtimeMinutes: dt, remark: elements.remarkInput?.value || '' });
-        updateTable();
-        closeModal();
-    }
-
-    function updateTable() {
-        if (!elements.tableBody || !elements.entryCount) return;
-        if (downtimeEntries.length === 0) {
-            elements.tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-16 text-center"><svg class="mx-auto h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #cbd5e1;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><p class="font-medium" style="color: var(--color-text-secondary);">Belum ada downtime entry</p></td></tr>`;
-            elements.entryCount.textContent = '0 entries';
+async function loadJobInfo(job) {
+    $('#jobLoader').removeClass('hidden');
+    try {
+        const res = await $.get('/Bom/GetJobInfo', { jobNumber: job });
+        if (res.success && res.data) {
+            $('#stockCodeInput').val(res.data.stockCode);
         } else {
-            elements.tableBody.innerHTML = downtimeEntries.map((e, i) => `<tr class="border-b hover:bg-gray-50"><td class="px-6 py-3"><button onclick="DownTimeApp.deleteEntry(${i})" class="bg-red-100 hover:bg-red-200 text-red-700 font-medium text-xs px-3 py-1.5 rounded-lg transition">Delete</button></td><td class="px-6 py-3 font-semibold">${e.groupCode}</td><td class="px-6 py-3 text-gray-600">${e.code}</td><td class="px-6 py-3 text-gray-700">${e.codeDescription || '-'}</td><td class="px-6 py-3 text-right font-bold text-red-600">${e.downtimeMinutes} min</td></tr>`).join('');
-            elements.entryCount.textContent = `${downtimeEntries.length} entr${downtimeEntries.length === 1 ? 'y' : 'ies'}`;
+            Swal.fire({ icon: 'warning', title: 'Job Not Found', text: res.message, confirmButtonColor: '#1e40af' });
+            $('#stockCodeInput').val('');
         }
-        const total = downtimeEntries.reduce((s, e) => s + e.downtimeMinutes, 0);
-        if (elements.totalDowntime) elements.totalDowntime.innerHTML = `${total.toFixed(2)} <span class="text-sm font-normal" style="color: var(--color-text-secondary);">min</span>`;
-        if (elements.runTimeInput) elements.runTimeInput.value = Math.max(0, 8 - (total / 60)).toFixed(2);
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal mengambil informasi job.', confirmButtonColor: '#1e40af' });
+    } finally {
+        $('#jobLoader').addClass('hidden');
+    }
+}
+
+async function loadNonProdGroups() {
+    const res = await $.get('/Bom/GetNonProdGroups');
+    if (res.success) {
+        const opts = res.data.map(g => `<option value="${g.grpCode}">${g.displayText}</option>`).join('');
+        $('#groupCodeSelect').append(opts).select2({ placeholder: 'Select Group', width: '100%' });
+    }
+}
+
+async function loadNonProdCodes(group) {
+    const res = await $.get('/Bom/GetNonProdCodes', { groupCode: group });
+    if (res.success) {
+        const opts = res.data.map(c => `<option value="${c.code}">${c.code} - ${c.description}</option>`).join('');
+        $('#codeSelect').html('<option value="">-- Select Code --</option>' + opts).prop('disabled', false).select2({ placeholder: 'Select Code', width: '100%' });
+    }
+}
+
+function openModal() {
+    $('#addDowntimeModal').removeClass('hidden');
+    $('#groupCodeSelect').val('').trigger('change');
+    $('#codeSelect').val('').prop('disabled', true).html('<option value="">-- Select Group First --</option>');
+    $('#downtimeMinutesInput, #remarkInput').val('');
+}
+
+function closeModal() {
+    $('#addDowntimeModal').addClass('hidden');
+}
+
+async function addDowntimeEntry() {
+    const groupCode = $('#groupCodeSelect').val();
+    const code = $('#codeSelect').val();
+    const minutes = parseInt($('#downtimeMinutesInput').val());
+    const remark = $('#remarkInput').val().trim();
+
+    if (!groupCode || !code || !minutes || minutes < 1) {
+        Swal.fire({ icon: 'warning', title: 'Incomplete Data', text: 'Mohon lengkapi semua field.', confirmButtonColor: '#1e40af' });
+        return;
     }
 
-    async function postDownTimeToServer() {
-        if (downtimeEntries.length === 0) { alert('Tidak ada downtime entry untuk disimpan!'); return; }
-        const machine = elements.machineSelect?.value;
-        const workCentre = elements.workCentreHidden?.value || '';
-        const jobNumber = elements.jobInput?.value.trim();
-        const stockCode = elements.stockInput?.value || '';
-        const entryDate = elements.jobDate?.value;
-        const shift = document.querySelector('input[name="Shift"]:checked')?.value || '1';
-        if (!machine || !jobNumber) { alert('Pilih Machine dan isi Job Number dulu!'); return; }
-        const postBtn = document.querySelector('button[onclick="DownTimeApp.postDownTimeToServer()"]');
-        const originalBtnText = postBtn?.innerHTML || 'Post';
-        if (postBtn) { postBtn.disabled = true; postBtn.innerHTML = '⏳ Saving...'; }
+    entryCounter++;
+    const entry = { id: entryCounter, groupCode, code, minutes, remark };
+    downtimeEntries.push(entry);
+
+    try {
+        const html = await $.ajax({
+            url: '/Bom/RenderDowntimeRow',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(entry)
+        });
+        
+        $('#downtimeTableBody tr[id="emptyStateRow"]').remove();
+        $(`tr[data-entry-id="${entry.id}"]`).remove();
+        $('#downtimeTableBody').append(html);
+        closeModal();
+        updateTotal();
+    } catch (err) {
+        console.error('Error rendering row:', err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal render entry.', confirmButtonColor: '#dc2626' });
+    }
+}
+
+function removeEntry(id) {
+    downtimeEntries = downtimeEntries.filter(e => e.id !== id);
+    $(`tr[data-entry-id="${id}"]`).fadeOut(200, function() { $(this).remove(); updateTotal(); });
+}
+
+async function updateTotal() {
+    const total = downtimeEntries.reduce((sum, e) => sum + e.minutes, 0);
+    $('#totalDowntime').html(`${total} <span class="text-sm font-normal" style="color: var(--text-sec);">min</span>`);
+    $('#entryCount').text(`${downtimeEntries.length} entri${downtimeEntries.length > 0 ? ` (${total} min)` : ''}`);
+    
+    if (downtimeEntries.length === 0) {
         try {
-            const payload = { machine, workCentre, jobNumber, stockCode, entryDate: entryDate ? new Date(entryDate) : new Date(), shift, entries: downtimeEntries.map(e => ({ groupCode: e.groupCode, code: e.code, description: e.codeDescription, downtimeMinutes: e.downtimeMinutes, remark: e.remark })) };
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
-            const response = await fetch('/Bom/PostDownTime', { method: 'POST', headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': token }, body: JSON.stringify(payload) });
-            const result = await response.json();
-            if (result.success) {
-                alert('✅ Downtime berhasil disimpan!');
-                downtimeEntries = [];
-                updateTable();
-                if (elements.machineSelect) elements.machineSelect.value = '';
-                if (elements.workCentreHidden) elements.workCentreHidden.value = '';
-                if (elements.wcDisplay) elements.wcDisplay.textContent = '-';
-                if (elements.jobInput) elements.jobInput.value = '';
-                if (elements.stockInput) elements.stockInput.value = '';
-                if (elements.jobDate) elements.jobDate.valueAsDate = new Date();
-            } else { alert(`❌ Gagal: ${result.message}`); }
-        } catch (error) { console.error('Error:', error); alert('⚠️ Terjadi kesalahan.'); }
-        finally { if (postBtn) { postBtn.disabled = false; postBtn.innerHTML = originalBtnText; } }
+            const html = await $.ajax({
+                url: '/Bom/RenderDowntimeTable',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify([])
+            });
+            $('#downtimeTableBody').html(html);
+        } catch (err) {
+            console.error('Error rendering table:', err);
+        }
+    } else {
+        $('#downtimeTableBody tr[id="emptyStateRow"]').remove();
+    }
+}
+
+async function submitForm() {
+    if (downtimeEntries.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'No Entries', text: 'Tambahkan minimal satu entry.', confirmButtonColor: '#1e40af' });
+        return;
     }
 
-    function deleteEntry(index) { if (confirm('Hapus entry ini?')) { downtimeEntries.splice(index, 1); updateTable(); } }
+    const machine = $('#machineDropdown').val();
+    const jobNumber = $('#jobInput').val().trim();
+    
+    if (!machine || !jobNumber) {
+        Swal.fire({ icon: 'warning', title: 'Incomplete Data', text: 'Pilih Machine dan Job Number.', confirmButtonColor: '#1e40af' });
+        return;
+    }
 
-    return { init, closeModal, addDowntimeEntry, postDownTimeToServer, deleteEntry, updateTable };
-})();
+    const payload = {
+        Machine: machine,
+        WorkCentre: $('#workCentreHidden').val(),
+        JobNumber: jobNumber,
+        StockCode: $('#stockCodeInput').val(),
+        EntryDate: $('#entryDate').val(),
+        Shift: $('input[name="Shift"]:checked').val(),
+        Entries: downtimeEntries.map(e => ({
+            GroupCode: e.groupCode,
+            Code: e.code,
+            DowntimeMinutes: e.minutes,
+            Remark: e.remark
+        }))
+    };
 
-$(document).ready(function() { DownTimeApp.init(); });
+    const token = $('input[name="__RequestVerificationToken"]').val();
+    
+    try {
+        const res = await $.ajax({
+            url: '/Bom/PostDownTime',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            headers: token ? { 'RequestVerificationToken': token } : {}
+        });
+
+        if (res.success) {
+            Swal.fire({ 
+                icon: 'success', 
+                title: 'Success!', 
+                text: res.message, 
+                showConfirmButton: false, 
+                timer: 2000, 
+                timerProgressBar: true 
+            }).then(() => resetForm());
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: res.message, confirmButtonColor: '#dc2626' });
+        }
+    } catch (error) {
+        let msg = 'Terjadi kesalahan.';
+        if (error.responseJSON && error.responseJSON.message) msg = error.responseJSON.message;
+        else if (error.status === 400) msg = 'Data tidak valid (400)';
+        else if (error.status === 500) msg = 'Internal server error (500)';
+        
+        Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#dc2626', width: 600 });
+    }
+}
+
+function resetForm() {
+    downtimeEntries = [];
+    entryCounter = 0;
+    $('#downtimeForm')[0].reset();
+    $('#machineDropdown').val('').trigger('change');
+    $('#stockCodeInput, #jobInput').val('');
+    $('#wcDisplay').text('-');
+    $('#workCentreHidden').val('');
+    
+    $.ajax({
+        url: '/Bom/RenderDowntimeTable',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify([])
+    }).done(function(html) {
+        $('#downtimeTableBody').html(html);
+    });
+    
+    updateTotal();
+    closeModal();
+}

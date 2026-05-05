@@ -1,18 +1,18 @@
-namespace PusTwo.Web.ViewModels
+namespace PusTwo.Application.DownTime.DTOs
 {
-    public class DownTimeEntryViewModel
+    public class CreateDownTimeCommand
     {
         public string Machine { get; set; } = string.Empty;
         public string WorkCentre { get; set; } = string.Empty;
         public string JobNumber { get; set; } = string.Empty;
         public string StockCode { get; set; } = string.Empty;
         public string GroupCode { get; set; } = string.Empty;
-        public string GroupDescription { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
-        public string CodeDescription { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int DowntimeMinutes { get; set; }
         public string? Remark { get; set; }
-        public DateTime EntryDate { get; set; } = DateTime.Now;
+        public DateTime EntryDate { get; set; }
         public string Shift { get; set; } = "1";
+        public string CreatedBy { get; set; } = string.Empty;
     }
 }

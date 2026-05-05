@@ -1,13 +1,10 @@
-namespace PusTwo.Application.DTOs.Syspro
+namespace PusTwo.Application.Syspro.DTOs
 {
     public class BomOperationDto
     {
         public string StockCode { get; set; } = string.Empty;
-
         public string Route { get; set; } = string.Empty;
-
         public decimal Operation { get; set; }
-
         public string WorkCentre { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,54 @@
+@model IEnumerable<PusTwo.Web.ViewModels.DownTimeBatchLineViewModel>
+
+@if (!Model.Any())
+{
+    <tr id="emptyStateRow">
+        <td colspan="7" class="px-6 py-16 text-center">
+            <svg class="mx-auto h-12 w-12 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-gray-500 font-medium">Belum ada downtime entry</p>
+            <p class="text-gray-400 text-xs mt-1">Klik tombol "Add Downtime" untuk menambah entry</p>
+        </td>
+    </tr>
+}
+else
+{
+    int index = 1;
+    foreach (var entry in Model)
+    {
+        <tr class="border-b border-gray-200 hover:bg-blue-50 transition-colors duration-150" data-entry-id="@entry.Id">
+            <td class="px-6 py-3 text-xs text-gray-500 font-medium">
+                @index
+            </td>
+            <td class="px-6 py-3">
+                <span class="font-semibold text-gray-800 bg-blue-100 px-2 py-1 rounded text-xs">
+                    @entry.GroupCode
+                </span>
+            </td>
+            <td class="px-6 py-3">
+                <span class="font-semibold text-gray-800 bg-indigo-100 px-2 py-1 rounded text-xs">
+                    @entry.Code
+                </span>
+            </td>
+        
+            <td class="px-6 py-3 text-right">
+                <span class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-md text-sm">
+                    @entry.DowntimeMinutes
+                </span>
+                <span class="text-xs text-gray-500 ml-1">min</span>
+            </td>
+            <td class="px-6 py-3 text-xs text-gray-600 max-w-xs truncate" title="@entry.Remark">
+                @(string.IsNullOrEmpty(entry.Remark) ? "-" : entry.Remark)
+            </td>
+            <td class="px-6 py-3 text-center">
+                <button type="button" 
+                        onclick="removeEntry(@entry.Id)" 
+                        class="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded-md transition-all duration-150 text-xs font-semibold border border-transparent hover:border-red-200">
+                    Hapus
+                </button>
+            </td>
+        </tr>
+        index++;
+    }
+}

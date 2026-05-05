@@ -1,12 +1,15 @@
-using PusTwo.Application.DTOs;
+using PusTwo.Application.DownTime.DTOs;
 
-namespace PusTwo.Application.Interfaces
+namespace PusTwo.Application.DownTime.Interfaces
 {
     public interface IDownTimeService
     {
-        Task<DownTimeDto> CreateDownTimeAsync(DownTimeDto dto);
-        Task<List<DownTimeDto>> GetDownTimesByJobAsync(string jobNumber);
-        Task<List<DownTimeDto>> GetDownTimesByDateRangeAsync(DateTime from, DateTime to);
-        Task<bool> DeleteDownTimeAsync(int id);
+        Task<DownTimeResult> CreateAsync(CreateDownTimeCommand command);
+        Task<int> CreateBatchAsync(CreateDownTimeBatchCommand batch);
+        Task<DownTimeResult?> GetByIdAsync(int id);
+        Task<List<DownTimeResult>> GetByJobAsync(string jobNumber);
+        Task<List<DownTimeResult>> GetByDateRangeAsync(DateTime from, DateTime to);
+        Task<List<DownTimeResult>> GetAllAsync();
+        Task<bool> DeleteAsync(int id);
     }
 }
